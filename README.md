@@ -1,38 +1,43 @@
-Microservice Login and Authentication
+# Expense Tracker System
 
-This repository contains a microservice built with FastAPI for user registration, authentication, and password reset functionalities. The microservice leverages modern Python technologies like Pydantic, SQLAlchemy, and JSON Web Tokens (JWT) to provide secure and robust authentication mechanisms.
-Features
+A monolithic web application built with FastAPI that provides comprehensive expense tracking functionality along with
+user authentication. This system helps users manage their personal finances by tracking expenses, generating reports,
+and managing budgets - all within a single, integrated application.
 
-* User Registration: Allows users to create accounts with unique credentials.
+## Features
 
-* User Authentication: Verifies user identity using secure authentication methods.
+* **User Management**
 
-* Password Reset: Enables users to securely reset their passwords.
+- Registration & Authentication
+- Secure password management
+- Profile management
+- Session handling with JWT
 
-* Token-based Authentication: Uses JSON Web Tokens (JWT) to authenticate and authorize users for accessing protected resources.
+* **Expense Tracking**
 
-* Session Management: Manages user sessions securely to ensure continuous access to the microservice.
+- Add, edit, delete expenses
+- Categorize expenses
+- Track spending patterns
+- Monthly/yearly summaries
+- Budget planning and alerts
 
+* **Financial Analytics**
 
-<b>Technologies Used<b>
+- Spending breakdowns
+- Category-wise analysis
+- Visual reports and charts
+- Budget vs actual comparisons
 
-FastAPI: A modern, fast (high-performance) web framework for building APIs with Python 3.7+ based on standard Python type hints.
-Pydantic: Data validation and settings management using Python type annotations.
-SQLAlchemy: SQL toolkit and Object-Relational Mapping (ORM) library for Python.
-JWT (JSON Web Tokens): A compact, URL-safe means of representing claims to be transferred between two parties securely.
+## Technologies Used
 
-<b> Setup </b>
+* **FastAPI**: Modern Python web framework for building the monolithic application
+* **Pydantic**: Data validation using Python type annotations
+* **SQLAlchemy**: Database ORM for storing user and expense data
+* **JWT**: Secure user authentication and session management
 
-* Clone the Repository 
-* git clone https://github.com/sudarshan-uprety/microservice-login-authentication.git
+## Setup
 
+### Clone the Repository
 
-* Install Dependencies
-* pip install -r requirements.txt
-
-
-* create an env (example provided)
-
-
-* Run the Application
-* uvicorn app.main:app --reload
+```bash
+git clone https://github.com/sudarshan-uprety/project-e.git
