@@ -1,0 +1,155 @@
+version: '3'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+    restart: unless-stopped
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms3g -Xmx3g"
+      - xpack.security.enabled=true
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - ELASTIC_PASSWORD= ${ELASTIC_PASSWORD}
+      - ELASTICSEARCH_API_KEY = ${ELASTICSEARCH_API_KEY}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - loki-network
+
+
+  redis-server:
+    image: redis:latest
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    networks:
+      - loki-network
+
+
+  auth_db_dev:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: ${USER_POSTGRES_DB_NAME}
+      POSTGRES_USER: ${USER_POSTGRES_DB_USER}
+      POSTGRES_PASSWORD: ${USER_POSTGRES_DB_PASSWORD}
+    env_file:
+      - .env
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - loki-network
+
+
+  auth_service_dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - auth_db_dev
+      - redis-server
+    ports:
+      - "9001:5000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - env=dev
+    container_name: auth_dev
+    networks:
+      - loki-network
+
+
+  auth_db_uat:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: ${USER_POSTGRES_DB_NAME}
+      POSTGRES_USER: ${USER_POSTGRES_DB_USER}
+      POSTGRES_PASSWORD: ${USER_POSTGRES_DB_PASSWORD}
+    env_file:
+      - .env
+    volumes:
+      - postgres_data_uat:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+    networks:
+      - loki-network
+
+
+  auth_service_uat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - auth_db_uat
+      - redis-server
+    ports:
+      - "9002:5000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - env=uat
+    container_name: auth_uat
+    networks:
+      - loki-network
+
+
+  auth_db_prod:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: ${USER_POSTGRES_DB_NAME}
+      POSTGRES_USER: ${USER_POSTGRES_DB_USER}
+      POSTGRES_PASSWORD: ${USER_POSTGRES_DB_PASSWORD}
+    env_file:
+      - .env
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    networks:
+      - loki-network
+
+
+  auth_service_prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - auth_db_prod
+      - redis-server
+    ports:
+      - "9000:5000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - env=prod
+    container_name: auth_prod
+    networks:
+      - loki-network
+
+volumes:
+  postgres_data_dev:
+  postgres_data_uat:
+  postgres_data_prod:
+  redis-data:
+  elasticsearch-data:
+
+networks:
+  loki-network:
+    external: true
